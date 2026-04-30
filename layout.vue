@@ -158,7 +158,7 @@
                     <ul class="footer-places" @click="onDynamicContentClick($event)" v-html="$store.state.config['skin.slliberty.footer_html'] || $store.state.config['wiki.footer_text']" />
                     <ul class="footer-icons">
                         <li class="footer-poweredbyico">
-                            <a href="//github.com/wjdgustn/thetree-skin-liberty" target="_blank">Liberty</a> | <a href="//github.com/wjdgustn/thetree" target="_blank">the tree</a>
+                            <a href="//github.com/hellojo011/thetree-skin-liberty" target="_blank">slLiberty</a> Modified by DIGIWB | <a href="//github.com/wjdgustn/thetree" target="_blank">the tree</a>
                         </li>
                     </ul>
                 </div>
