@@ -127,7 +127,7 @@ del, s, strike {
     min-height: 2.8rem;
     background-color: var(--liberty-brand-color, #4188f1);
     position: absolute;
-    z-index: 300;
+    z-index: 100;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
     font-weight: bold;
     left: 0;
@@ -708,3 +708,49 @@ div.scroll-buttons a {
 .scroll-buttons a:link, .scroll-buttons a:visited {
     color: white;
 }
+
+.btn-randomly {
+    margin-top: 3.5px;
+    border-radius: 2rem;
+    float: right;
+    margin-right: 10px;
+}
+
+
+@keyframes name-gradient {
+  0% {
+    background-position-x: 0%;
+  }
+  50% {
+    background-position-x: 100%;
+  }
+  100% {
+    background-position-x: 0%;
+  }
+}
+
+@keyframes barrel-roll {
+  0%   { transform: rotate(0deg); }
+  50%  { transform: rotate(180deg) scale(0.98); }
+  100% { transform: rotate(360deg); }
+}
+
+html.barrel-roll {
+  animation: barrel-roll 1s ease-in-out;
+  }
+
+
+@keyframes konamiSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.avatar.konami-spin {
+  animation: konamiSpin 0.9s ease-in-out;
+  will-change: transform;
+}
+        

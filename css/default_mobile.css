@@ -119,6 +119,14 @@
     .Liberty .content-wrapper .liberty-footer {
         padding: 0.5rem;
     }
+
+	.btn-randomly {
+	    float: right;
+	    position: absolute;
+	    margin: 5px;
+	    right: 40px;
+	    border-radius: 2rem;
+	}
 }
 
 /* Max-width: 798 메뉴 마지노선 테블릿 모드로 전환 시작하기위한 부분 */
@@ -135,6 +143,14 @@
     .Liberty .content-wrapper .liberty-content .liberty-content-main iframe {
         width: 90%;
         height: 20rem;
+    }
+
+	.btn-randomly {
+        float: right;
+        position: absolute;
+        margin: 5px;
+        right: 40px;
+        border-radius: 2rem;
     }
 }
 
@@ -195,5 +211,13 @@
 
     .Liberty .nav-wrapper .navbar .form-inline {
         padding-top: 0.04rem;
+    }
+
+	.btn-randomly {
+        float: right;
+        position: absolute;
+        margin: 5px;
+        right: 40px;
+        border-radius: 2rem;
     }
 }

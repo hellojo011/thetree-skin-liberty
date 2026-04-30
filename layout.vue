@@ -6,34 +6,32 @@
                 <nuxt-link class="navbar-brand" to="/">{{ $store.state.config['skin.liberty.navbar_logo_text'] }}</nuxt-link>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
-                        <nuxt-link class="nav-link" to="/RecentChanges"><span class="fa fa-refresh"></span><span class="hide-title">최근 변경</span></nuxt-link>
+                        <nuxt-link class="nav-link" to="/RecentChanges"><span class="fa fa-refresh"></span><span class="hide-title">{{ $t('skin.recent_changes') }}</span></nuxt-link>
                     </li>
                     <li class="nav-item">
-                        <nuxt-link class="nav-link" to="/RecentDiscuss"><span class="fa fa-comments"></span><span class="hide-title">최근 토론</span></nuxt-link>
-                    </li>
-                    <li class="nav-item">
-                        <nuxt-link class="nav-link" to="/random"><span class="fa fa-random"></span><span class="hide-title">임의 문서</span></nuxt-link>
+                        <nuxt-link class="nav-link" to="/RecentDiscuss"><span class="fa fa-comments"></span><span class="hide-title">{{ $t('skin.recent_discuss') }}</span></nuxt-link>
                     </li>
                     <li class="nav-item">
                         <dropdown>
                             <template #toggle>
                                 <a class="nav-link dropdown-toggle dropdown-toggle-fix" href="#" @click.prevent>
-                                    <span class="fa fa-gear"></span><span class="hide-title">도구</span>
+                                    <span class="fa fa-gear"></span><span class="hide-title">{{ $t('skin.special_tab') }}</span>
                                 </a>
                             </template>
                             <div class="dropdown-menu" role="menu">
-                                <nuxt-link to="/Upload" class="dropdown-item">파일 올리기</nuxt-link>
-                                <div class="dropdown-divider"></div>
-                                <nuxt-link to="/NeededPages" class="dropdown-item">작성이 필요한 문서</nuxt-link>
-                                <nuxt-link to="/OrphanedPages" class="dropdown-item">고립된 문서</nuxt-link>
-                                <nuxt-link to="/OrphanedCategories" class="dropdown-item">고립된 분류</nuxt-link>
-                                <nuxt-link to="/UncategorizedPages" class="dropdown-item">분류가 되지 않은 문서</nuxt-link>
-                                <nuxt-link to="/OldPages" class="dropdown-item">편집된 지 오래된 문서</nuxt-link>
-                                <nuxt-link to="/ShortestPages" class="dropdown-item">내용이 짧은 문서</nuxt-link>
-                                <nuxt-link to="/LongestPages" class="dropdown-item">내용이 긴 문서</nuxt-link>
-                                <nuxt-link to="/BlockHistory" class="dropdown-item">차단 내역</nuxt-link>
-                                <nuxt-link to="/RandomPage" class="dropdown-item">RandomPage</nuxt-link>
-                                <nuxt-link to="/License" class="dropdown-item">라이선스</nuxt-link>
+								<nuxt-link to="/NeededPages" class="dropdown-item">{{ $t('titles.needed_pages') }}</nuxt-link>
+                                <nuxt-link to="/OrphanedPages" class="dropdown-item">{{ $t('titles.orphaned_pages') }}</nuxt-link>
+                                <nuxt-link to="/OrphanedCategories" class="dropdown-item">{{ $t('titles.orphaned_categories') }}</nuxt-link>
+                                <nuxt-link to="/UncategorizedPages" class="dropdown-item">{{ $t('titles.uncategorized_pages') }}</nuxt-link>
+                                <nuxt-link to="/OldPages" class="dropdown-item">{{ $t('titles.old_pages') }}</nuxt-link>
+                                <nuxt-link to="/ShortestPages" class="dropdown-item">{{ $t('titles.short_title_pages') }}</nuxt-link>
+                                <nuxt-link to="/LongestPages" class="dropdown-item">{{ $t('titles.long_title_pages') }}</nuxt-link>
+                                <nuxt-link to="/BlockHistory" class="dropdown-item">{{ $t('titles.block_history') }}</nuxt-link>
+                                <nuxt-link to="/RandomPage" class="dropdown-item">{{ $t('titles.random_page') }}</nuxt-link>
+                                <nuxt-link to="/Upload" class="dropdown-item">{{ $t('titles.upload') }}</nuxt-link>
+                                <nuxt-link to="/License" class="dropdown-item">{{ $t('titles.license') }}</nuxt-link>
+                                <nuxt-link to="/Terms" class="dropdown-item">{{ $t('skin_liberty:terms') }}</nuxt-link>
+								<a href="https://board.furpark.kr" target="_blank" class="dropdown-item">Furpark Shelter</a>
                                 <template v-if="$store.state.session.menus.length">
                                     <div class="dropdown-divider"></div>
                                     <nuxt-link v-for="m in $store.state.session.menus" :key="m.l" :to="m.l" class="dropdown-item">{{ m.t }}</nuxt-link>
@@ -58,28 +56,30 @@
                                 <b>{{ $store.state.session.account.name }}</b><br>Please login!
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" @click.prevent="openSettingModal">설정</a>
-                            <a v-if="$store.state.currentTheme === 'light'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'dark'})">다크 테마로</a>
-                            <a v-if="$store.state.currentTheme === 'dark'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'light'})">라이트 테마로</a>
-                            <div class="dropdown-divider"></div>
-                            <template v-if="$store.state.session.account.type === 1">
-                                <nuxt-link to="/member/mypage" class="dropdown-item">내 정보</nuxt-link>
-                                <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'w')" class="dropdown-item">내 사용자 문서</nuxt-link>
-                                <nuxt-link to="/member/starred_documents" class="dropdown-item">내 문서함</nuxt-link>
-                                <div class="dropdown-divider"></div>
-                            </template>
-                            <template v-if="$store.state.session.account.uuid">
-                                <nuxt-link class="dropdown-item" :to="contribution_link($store.state.session.account.uuid)">내 문서 기여 목록</nuxt-link>
-                                <nuxt-link class="dropdown-item" :to="contribution_link_discuss($store.state.session.account.uuid)">내 토론 기여 목록</nuxt-link>
-                                <nuxt-link class="dropdown-item" :to="contribution_link_edit_request($store.state.session.account.uuid)">내 편집 요청 목록</nuxt-link>
-                                <div class="dropdown-divider"></div>
-                            </template>
-                            <nuxt-link v-if="$store.state.session.account.type === 1" :to="{path:'/member/logout',query:{redirect:$route.fullPath}}" class="dropdown-item">로그아웃</nuxt-link>
-                            <nuxt-link v-else :to="{path:'/member/login',query:{redirect:$route.fullPath}}" class="dropdown-item">로그인</nuxt-link>
+<a href="#" class="dropdown-item" @click.prevent="openSettingModal">{{ $t('components.setting.title') }}</a>
+<a v-if="$store.state.currentTheme === 'light'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'dark'})">{{ $t('skin_liberty:toDark') }}</a>
+<a v-if="$store.state.currentTheme === 'dark'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'light'})">{{ $t('skin_liberty:toLight') }}</a>
+<div class="dropdown-divider"></div>
+<template v-if="$store.state.session.account.type === 1">
+    <nuxt-link to="/member/mypage" class="dropdown-item">{{ $t('titles.mypage') }}</nuxt-link>
+    <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'w')" class="dropdown-item">{{ $t('skin.my_user_doc') }}</nuxt-link>
+    <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'w')+encodeURI('/연습장')" class="dropdown-item">{{ $t('skin_liberty:mySandbox') }}</nuxt-link>
+    <nuxt-link to="/member/starred_documents" class="dropdown-item">{{ $t('skin.my_stars') }}</nuxt-link>
+    <div class="dropdown-divider"></div>
+</template>
+<template v-if="$store.state.session.account.uuid">
+    <nuxt-link class="dropdown-item" :to="contribution_link($store.state.session.account.uuid)">{{ $t('skin.my_contribution_document') }}</nuxt-link>
+    <nuxt-link class="dropdown-item" :to="contribution_link_discuss($store.state.session.account.uuid)">{{ $t('skin.my_contribution_discuss') }}</nuxt-link>
+    <nuxt-link class="dropdown-item" :to="contribution_link_edit_request($store.state.session.account.uuid)">{{ $t('skin.my_contribution_edit_request') }}</nuxt-link>
+    <div class="dropdown-divider"></div>
+</template>
+<nuxt-link v-if="$store.state.session.account.type === 1" :to="{path:'/member/logout',query:{redirect:$route.fullPath}}" class="dropdown-item">{{ $t('skin.logout') }}</nuxt-link>
+<nuxt-link v-else :to="{path:'/member/login',query:{redirect:$route.fullPath}}" class="dropdown-item">{{ $t('skin.login') }}</nuxt-link>
                         </div>
                     </dropdown>
                 </div>
                 <search-form />
+				<a href="/random" class="btn btn-secondary btn-randomly" style="margin-top: 3.5px;border-radius: 2rem;float: right;margin-right:10px;"><span class="fa fa-random"></span></a>
             </nav>
         </div>
         <div class="content-wrapper" :class="{ 'hide-sidebar': $store.state.localConfig['liberty.sidebar'] === 'hide' || $store.state.localConfig['liberty.sidebar'] === 'footer' }">
@@ -89,20 +89,20 @@
                         <div class="live-recent-header">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                    <a id="liberty-recent-tab1" class="nav-link active">최근 변경</a>
+                                    <a id="liberty-recent-tab1" class="nav-link active">{{ $t('skin.recent_changes') }}</a>
                                 </li>
                             </ul>
                         </div>
                         <recent-card />
                         <div class="live-recent-footer">
-                            <nuxt-link to="/RecentChanges" title="최근 변경내역"><span class="label label-info">더 보기</span></nuxt-link>
+							<nuxt-link to="/RecentChanges" :title="$t('skin.recent_changes')"><span class="label label-info">{{ $t('skin_liberty:more') }}</span></nuxt-link>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="container-fluid liberty-content">
                 <div v-if="$store.state.config['wiki.sitenotice']" id="site-notice" class="notification">
-                    <span class="label" v-html="$store.state.config['wiki.sitenotice']" @click="onDynamicContentClick($event)" />
+                    <span class="label" v-html="$store.state.config['wiki.sitenotice']" />
                 </div>
                 <div class="liberty-content-header">
                     <content-tool @onClickEditBtn="showEditMessage" />
@@ -187,6 +187,7 @@
 @import "./css/default.css";
 @import './css/default_mobile.css';
 @import "./css/dark.css";
+@import "./css/userDocumentProfile.css";
 </style>
 
 <script>
@@ -200,6 +201,8 @@ import ContentTool from './layouts/contentTool';
 import Dropdown from './components/dropdown';
 import SettingModal from './components/settingModal';
 import License from "raw-loader!./LICENSE";
+import initEasterEgg from './easter-egg';
+import initKonamiEasterEgg from './konami-egg';
 
 export default {
     mixins: [Common],
@@ -218,9 +221,24 @@ export default {
             isShowACLMessage: false
         };
     },
+	mounted() {
+	    this.showProfileImage();
+		initEasterEgg();
+        initKonamiEasterEgg();
+	},
     watch: {
         $route() {
             this.isShowACLMessage = false;
+        },
+		'$store.state.viewData.userProfile'(val) {
+			if (val) {
+				this.showProfileImage()
+			}
+        },
+        '$store.state.page.data.document.title'(val) {
+            const title = val?.trim().toLowerCase()
+            if (title !== 'do a barrel roll') {}
+			else {doABarrelRoll();}
         }
     },
     head() {
@@ -237,7 +255,7 @@ export default {
                 '--liberty-brand-color': this.brand_color,
                 '--liberty-brand-dark-color': this.selectByTheme(this.$store.state.config['skin.liberty.brand_dark_color_1'] ?? this.darkenColor(this.brand_color), '#16171a'),
                 '--liberty-brand-bright-color': this.selectByTheme(this.$store.state.config['skin.liberty.brand_bright_color_1'] ?? this.lightenColor(this.brand_color), '#383b40'),
-                '--liberty-navbar-logo-image': this.$store.state.config['skin.liberty.navbar_logo_image'] || (this.$store.state.config['wiki.logo_url'] && `url(${this.$store.state.config['wiki.logo_url']})`),
+                '--liberty-navbar-logo-image': this.$store.state.config['skin.liberty.navbar_logo_image'] || `url(${this.$store.state.config['wiki.logo_url']})`,
                 '--liberty-navbar-logo-minimum-width': this.$store.state.config['skin.liberty.navbar_logo_minimum_width'],
                 '--liberty-navbar-logo-width': this.$store.state.config['skin.liberty.navbar_logo_width'],
                 '--liberty-navbar-logo-size': this.$store.state.config['skin.liberty.navbar_logo_size'],
@@ -256,6 +274,78 @@ export default {
         }
     },
     methods: {
+	    updateNotFoundImage(viewName) {
+            const article = document.querySelector('.wiki-article')
+            const existing = document.querySelector('#notfound-watermark')
+
+            if (existing) existing.remove()
+
+            if (viewName === 'notfound' && article) {
+                article.style.position = 'relative';
+                article.style.height = '400px';
+                const count = 2 // notfound 이미지 개수
+                const randomNum = Math.floor(Math.random() * count) + 1
+                const randomSrc = `/notfound${randomNum}.png`
+                const alertBox = article.querySelector('.thetree-alert')
+                let imgElement = `<img id="notfound-watermark"
+                       src="${randomSrc}"
+                       style="width: 300px; opacity: 0.4; right: 0px; padding-right: 10px; margin-right: 20px; z-index: 0; position: absolute; pointer-events:none;">`
+                if (alertBox) {
+                    alertBox.insertAdjacentHTML(
+					  'afterend',
+                      imgElement
+                    )
+                } else {
+                    article.insertAdjacentHTML(
+                      'afterbegin',
+                      imgElement
+                    )
+                }
+            } else {
+                    article.style.position = '';
+                    article.style.height = '';
+            }
+        },
+		showProfileImage() {
+			this.$nextTick(() => {
+                if(this.$store.state['viewData'].userProfile) {
+                    const existUserProfile = document.querySelector('.user-profile-table');
+                    if(existUserProfile) existUserProfile.remove();
+                    const content = document.querySelector('.wiki-content')
+                    let date = new Date(this.$store.state['viewData'].userProfile.createdAt).toLocaleDateString();
+                    let profileHtml = `<div class="wiki-paragraph">
+                          <table class="user-profile-table">
+                              <tr>
+                                  <td colspan=2 class="avatar-cell">
+                                      <img src="${this.$store.state['viewData'].userProfile.gravatarUrl}" alt="Avatar" class="avatar">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td><strong class="clone-trigger">사용자명</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.username}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>가입일</strong></td>
+                                  <td>${date}</td>
+                              </tr>
+							  <tr>
+                                  <td><strong>권한</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.userPerm}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>ACL Group</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.aclGroups}</td>
+                              </tr>
+                          </table>
+                      </div>`;
+                content.insertAdjacentHTML(
+                    'afterbegin',
+                    profileHtml
+                    )
+					bindCloneTrigger();
+                }
+			})
+		},
         showEditMessage() {
             if (this.isShowACLMessage) {
                 this.$router.push(this.doc_action_link(this.$store.state.page.data.document, this.requestable ? 'new_edit_request' : 'edit'));
