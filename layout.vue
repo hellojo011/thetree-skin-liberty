@@ -1,0 +1,385 @@
+<template>
+    <div class="Liberty" :style="skinConfig">
+        <div id="top"></div>
+        <div class="nav-wrapper" :class="{ 'navbar-fixed-top': $store.state.localConfig['slliberty.fixed_navbar'] === true }">
+            <nav class="navbar navbar-dark">
+                <nuxt-link class="navbar-brand" to="/">{{ $store.state.config['skin.slliberty.navbar_logo_text'] }}</nuxt-link>
+                <ul class="nav navbar-nav">
+                    <li class="nav-item">
+                        <nuxt-link class="nav-link" to="/RecentChanges"><span class="fa fa-refresh"></span><span class="hide-title">{{ $t('skin.recent_changes') }}</span></nuxt-link>
+                    </li>
+                    <li class="nav-item">
+                        <nuxt-link class="nav-link" to="/RecentDiscuss"><span class="fa fa-comments"></span><span class="hide-title">{{ $t('skin.recent_discuss') }}</span></nuxt-link>
+                    </li>
+                    <li class="nav-item">
+                        <dropdown>
+                            <template #toggle>
+                                <a class="nav-link dropdown-toggle dropdown-toggle-fix" href="#" @click.prevent>
+                                    <span class="fa fa-gear"></span><span class="hide-title">{{ $t('skin.special_tab') }}</span>
+                                </a>
+                            </template>
+                            <div class="dropdown-menu" role="menu">
+                                <nuxt-link to="/NeededPages" class="dropdown-item">{{ $t('titles.needed_pages') }}</nuxt-link>
+                                <nuxt-link to="/OrphanedPages" class="dropdown-item">{{ $t('titles.orphaned_pages') }}</nuxt-link>
+                                <nuxt-link to="/OrphanedCategories" class="dropdown-item">{{ $t('titles.orphaned_categories') }}</nuxt-link>
+                                <nuxt-link to="/UncategorizedPages" class="dropdown-item">{{ $t('titles.uncategorized_pages') }}</nuxt-link>
+                                <nuxt-link to="/OldPages" class="dropdown-item">{{ $t('titles.old_pages') }}</nuxt-link>
+                                <nuxt-link to="/ShortestPages" class="dropdown-item">{{ $t('titles.short_title_pages') }}</nuxt-link>
+                                <nuxt-link to="/LongestPages" class="dropdown-item">{{ $t('titles.long_title_pages') }}</nuxt-link>
+                                <nuxt-link to="/BlockHistory" class="dropdown-item">{{ $t('titles.block_history') }}</nuxt-link>
+                                <nuxt-link to="/RandomPage" class="dropdown-item">{{ $t('titles.random_page') }}</nuxt-link>
+                                <nuxt-link to="/Upload" class="dropdown-item">{{ $t('titles.upload') }}</nuxt-link>
+                                <nuxt-link to="/License" class="dropdown-item">{{ $t('titles.license') }}</nuxt-link>
+								<nuxt-link to="/Terms" class="dropdown-item">{{ $t('skin_slliberty:terms') }}</nuxt-link>
+								<a href="https://board.furpark.kr" target="_blank" class="dropdown-item">Furpark Shelter</a>
+                                <template v-if="$store.state.session.menus.length">
+                                    <div class="dropdown-divider"></div>
+                                    <nuxt-link v-for="m in $store.state.session.menus" :key="m.l" :to="m.l" class="dropdown-item">{{ m.t }}</nuxt-link>
+                                </template>
+                            </div>
+                        </dropdown>
+                    </li>
+                </ul>
+                <div class="navbar-login">
+                    <dropdown class="login-menu">
+                        <template #toggle>
+                            <a id="login-menu" class="dropdown-toggle" type="button">
+                                <img v-if="$store.state.session.gravatar_url" class="profile-img" :src="$store.state.session.gravatar_url">
+                                <span v-else class="fa fa-user"></span>
+                            </a>
+                        </template>
+                        <div class="dropdown-menu dropdown-menu-right login-dropdown-menu">
+                            <div v-if="$store.state.session.account.type === 1" class="username dropdown-item">
+                                <b>{{ $store.state.session.account.name }}</b><br>Member
+                            </div>
+                            <div v-else-if="$store.state.session.account.type === 0" class="username dropdown-item">
+                                <b>{{ $store.state.session.account.name }}</b><br>Please login!
+                            </div><div class="dropdown-divider"></div>
+<a href="#" class="dropdown-item" @click.prevent="openSettingModal">{{ $t('components.setting.title') }}</a>
+<a v-if="$store.state.currentTheme === 'light'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'dark'})">{{ $t('skin_slliberty:toDark') }}</a>
+<a v-if="$store.state.currentTheme === 'dark'" href="#" class="dropdown-item" @click.prevent="$store.commit('localConfigSetValue', {key: 'wiki.theme', value: 'light'})">{{ $t('skin_slliberty:toLight') }}</a>
+<div class="dropdown-divider"></div>
+<template v-if="$store.state.session.account.type === 1">
+    <nuxt-link to="/member/mypage" class="dropdown-item">{{ $t('titles.mypage') }}</nuxt-link>
+    <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'w')" class="dropdown-item">{{ $t('skin.my_user_doc') }}</nuxt-link>
+    <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'w')+encodeURI('/연습장')" class="dropdown-item">{{ $t('skin_slliberty:mySandbox') }}</nuxt-link>
+    <nuxt-link to="/member/starred_documents" class="dropdown-item">{{ $t('skin.my_stars') }}</nuxt-link>
+    <div class="dropdown-divider"></div>
+</template>
+<template v-if="$store.state.session.account.uuid">
+    <nuxt-link class="dropdown-item" :to="contribution_link($store.state.session.account.uuid)">{{ $t('skin.my_contribution_document') }}</nuxt-link>
+    <nuxt-link class="dropdown-item" :to="contribution_link_discuss($store.state.session.account.uuid)">{{ $t('skin.my_contribution_discuss') }}</nuxt-link>
+    <nuxt-link class="dropdown-item" :to="contribution_link_edit_request($store.state.session.account.uuid)">{{ $t('skin.my_contribution_edit_request') }}</nuxt-link>
+    <div class="dropdown-divider"></div>
+</template>
+<nuxt-link v-if="$store.state.session.account.type === 1" :to="{path:'/member/logout',query:{redirect:$route.fullPath}}" class="dropdown-item">{{ $t('skin.logout') }}</nuxt-link>
+<nuxt-link v-else :to="{path:'/member/login',query:{redirect:$route.fullPath}}" class="dropdown-item">{{ $t('skin.login') }}</nuxt-link>
+                        </div>
+                    </dropdown>
+                </div>
+                <search-form />
+            </nav>
+        </div>
+        <div class="content-wrapper" :class="{ 'hide-sidebar': $store.state.localConfig['slliberty.sidebar'] === 'hide' || $store.state.localConfig['slliberty.sidebar'] === 'footer' }">
+            <div class="liberty-sidebar">
+                <div class="liberty-right-fixed" :class="{ 'fixed': $store.state.localConfig['slliberty.sidebar'] === 'fix' }">
+                    <div class="live-recent">
+                        <div class="live-recent-header">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a id="liberty-recent-tab1" class="nav-link active" style="font-size: 1.3rem;">{{ $t('skin.recent_changes') }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <recent-card />
+                        <div class="live-recent-footer">
+							<nuxt-link to="/RecentChanges" :title="$t('skin.recent_changes')"><span class="label label-info">{{ $t('skin_slliberty:more') }}</span></nuxt-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid liberty-content">
+                <div v-if="$store.state.config['wiki.sitenotice']" id="site-notice" class="notification">
+                    <span class="label" v-html="$store.state.config['wiki.sitenotice']" />
+                </div>
+                <div class="liberty-content-header">
+                    <content-tool @onClickEditBtn="showEditMessage" />
+                    <div class="title">
+                        <h1 v-if="$store.state.page.data.document && $store.state.page.viewName !== 'error'">
+                            <nuxt-link :to="doc_action_link($store.state.page.data.document, 'w')"><span v-if="$store.state.page.data.document.forceShowNamespace !== false" class="namespace">{{$store.state.page.data.document.namespace}}:</span>{{$store.state.page.data.document.title}}</nuxt-link>
+                            <small v-if="$store.state.page.viewName === 'edit_edit_request' || $store.state.page.viewName === 'edit_request'">({{ $t('skin_slliberty:edit_request')}})</small>
+                            <small v-else-if="$store.state.page.viewName === 'edit' && $store.state.page.data.body.section">({{ $t('skin.edit_section_revision', { rev: $store.state.page.data.body.baserev }) }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'edit' && $store.state.page.data.body.baserev === '0'">({{ $t('skin.edit_new_document') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'edit'">({{ $t('skin.edit_revision', { rev: $store.state.page.data.body.baserev }) }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'history'">({{ $t('title_description.history') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'backlink'">({{ $t('title_description.backlinks') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'move'">({{ $t('title_description.move') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'delete'">({{ $t('title_description.delete') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'acl'">(ACL)</small>
+                            <small v-else-if="$store.state.page.viewName === 'thread'">({{ $t('title_description.thread') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'thread_list'">({{ $t('title_description.thread_list') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'thread_list_close'">({{ $t('title_description.thread_list_close') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'edit_request_close'">({{ $t('title_description.edit_request_close') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'diff'">({{ $t('title_description.diff') }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'revert' && $store.state.page.data.rev">({{ $t('title_description.revert', { rev: $store.state.page.data.rev}) }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'raw' && $store.state.page.data.rev">({{ $t('title_description.raw', { rev: $store.state.page.data.rev}) }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'blame' && $store.state.page.data.rev">({{ $t('title_description.blame', { rev: $store.state.page.data.rev}) }})</small>
+                            <small v-else-if="$store.state.page.viewName === 'wiki' && $store.state.page.data.rev">({{ $t('title_description.w', { rev: $store.state.page.data.rev}) }})</small>
+                        </h1>
+                        <h1 v-else>{{ $store.state.page.title }}</h1>
+                    </div>
+                </div>
+                <div class="liberty-content-main wiki-article">
+                    <alert v-if="isShowACLMessage && $store.state.page.data.edit_acl_message" @close="isShowACLMessage = false" error closable>
+                        <span v-html="$store.state.page.data.edit_acl_message" @click="onDynamicContentClick($event)"></span>
+                        <span v-if="requestable"><br v-if="$store.state.page.data.edit_acl_message.includes('\n')"> {{ $t('skin.edit_request_instead') }}</span>
+                    </alert>
+                    <alert v-if="$store.state.session.user_document_discuss && $store.state.localConfig['wiki.hide_user_document_discuss'] !== $store.state.session.user_document_discuss" @close="$store.commit('localConfigSetValue', {key: 'wiki.hide_user_document_discuss', value: $store.state.session.user_document_discuss})" closable theme="primary">
+                        현재 진행 중인 <nuxt-link :to="doc_action_link(user_doc($store.state.session.account.name), 'discuss')">사용자 토론</nuxt-link>이 있습니다.
+                    </alert>
+                    <alert v-if="$store.state.page.viewName === 'notfound' && $store.state.page.data.document.namespace === '문서'" style="line-height: 2.1rem;">
+                        '{{ $store.state.page.title }}'을(를) 검색하시겠습니까?
+                        <div class="float-right"><seed-link-button :to="'/Search?q='+ $store.state.page.title">검색</seed-link-button></div>
+                        <div class="clearfix"></div>
+                    </alert>
+                    <nuxt />
+                    <div v-if="$store.state.page.viewName === 'license'">
+                        <h2>Liberty skin license</h2>
+                        <pre>{{ License }}</pre>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="bottom" class="liberty-footer">
+                    <ul v-if="$store.state.page.viewName === 'wiki' && $store.state.page.data.date" class="footer-info">
+                        <li v-if="$store.state.page.data.rev" class="footer-info-lastmod">이 리비전은 <local-date :date="$store.state.page.data.date" />에 편집되었습니다.</li>
+                        <li v-else class="footer-info-lastmod">이 문서는 <local-date :date="$store.state.page.data.date" />에 마지막으로 편집되었습니다.</li>
+                        <li class="footer-info-copyright" v-html="$store.state.page.data.copyright_text" />
+                    </ul>
+                    <ul class="footer-places" @click="onDynamicContentClick($event)" v-html="$store.state.config['skin.slliberty.footer_html'] || $store.state.config['wiki.footer_text']" />
+                    <ul class="footer-icons">
+                        <li class="footer-poweredbyico">
+                            <a href="//github.com/wjdgustn/thetree-skin-liberty" target="_blank">Liberty</a> | <a href="//github.com/wjdgustn/thetree" target="_blank">the tree</a>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="$store.state.localConfig['slliberty.sidebar'] === 'footer'" class="footer-recent">
+                    <recent-card :limit="8" />
+                    <div class="live-recent-footer">
+                        <nuxt-link to="/RecentChanges" :title="$t('titles.recent_changes')"><span class="label label-info">{{ $t('skin_slliberty:more') }}</span></nuxt-link>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-buttons">
+            <nuxt-link class="scroll-toc" to="#toc"><i class="fa fa-list-alt" aria-hidden="true"></i></nuxt-link>
+            <nuxt-link id="left" class="scroll-button" to="#top"><i class="fa fa-arrow-up" aria-hidden="true"></i></nuxt-link>
+            <nuxt-link id="right" class="scroll-bottom" to="#bottom"><i class="fa fa-arrow-down" aria-hidden="true"></i></nuxt-link>
+        </div>
+    </div>
+</template>
+
+<style>
+@import "./css/bootstrap.min.css";
+@import "./css/font-awesome.min.css";
+@import "./css/font/Noto Sans KR.css";
+@import "./css/default.css";
+@import './css/default_mobile.css';
+@import "./css/dark.css";
+@import "./css/userDocumentProfile.css";
+</style>
+
+<script>
+import Common from '~/mixins/common';
+import Alert from '~/components/alert';
+import SeedLinkButton from '~/components/seedLinkButton';
+import LocalDate from '~/components/localDate';
+import RecentCard from './layouts/recentCard';
+import SearchForm from './layouts/searchForm';
+import ContentTool from './layouts/contentTool';
+import Dropdown from './components/dropdown';
+import SettingModal from './components/settingModal';
+import License from "raw-loader!./LICENSE";
+import initEasterEgg from './easter-egg';
+import initKonamiEasterEgg from './konami-egg';
+
+export default {
+    mixins: [Common],
+    components: {
+        Alert,
+        SeedLinkButton,
+        LocalDate,
+        RecentCard,
+        SearchForm,
+        Dropdown,
+        ContentTool
+    },
+    data() {
+        return {
+            License,
+            isShowACLMessage: false
+        };
+    },
+	mounted() {
+	    this.showProfileImage();
+		initEasterEgg();
+        initKonamiEasterEgg();
+	},
+    watch: {
+        $route() {
+            this.isShowACLMessage = false;
+        },
+		'$store.state.viewData.userProfile'(val) {
+			if (val) {
+				this.showProfileImage()
+			}
+        },
+        '$store.state.page.data.document.title'(val) {
+            const title = val?.trim().toLowerCase()
+            if (title !== 'do a barrel roll') {}
+			else {doABarrelRoll()}
+        }
+    },
+    head() {
+        return {
+            meta: [{ name: 'theme-color', content: this.brand_color }]
+        };
+    },
+    computed: {
+        brand_color() {
+            return this.selectByTheme(this.$store.state.config['skin.slliberty.brand_color_1'] ?? '#4188f1', '#2d2f34');
+        },
+        skinConfig() {
+            return {
+                '--liberty-brand-color': this.brand_color,
+                '--liberty-brand-dark-color': this.selectByTheme(this.$store.state.config['skin.slliberty.brand_dark_color_1'] ?? this.darkenColor(this.brand_color), '#16171a'),
+                '--liberty-brand-bright-color': this.selectByTheme(this.$store.state.config['skin.slliberty.brand_bright_color_1'] ?? this.lightenColor(this.brand_color), '#383b40'),
+                '--liberty-navbar-logo-image': this.$store.state.config['skin.slliberty.navbar_logo_image'] || `url(${this.$store.state.config['wiki.logo_url']})`,
+                '--liberty-navbar-logo-minimum-width': this.$store.state.config['skin.slliberty.navbar_logo_minimum_width'],
+                '--liberty-navbar-logo-width': this.$store.state.config['skin.slliberty.navbar_logo_width'],
+                '--liberty-navbar-logo-size': this.$store.state.config['skin.slliberty.navbar_logo_size'],
+                '--liberty-navbar-logo-padding': this.$store.state.config['skin.slliberty.navbar_logo_padding'],
+                '--liberty-navbar-logo-margin': this.$store.state.config['skin.slliberty.navbar_logo_margin'],
+                '--brand-color-1': 'var(--liberty-brand-color)',
+                '--brand-color-2': this.selectByTheme(this.$store.state.config['skin.slliberty.brand_color_2'] ?? 'var(--liberty-brand-color)', 'var(--liberty-brand-color)'),
+                '--brand-bright-color-1': 'var(--liberty-brand-bright-color)',
+                '--brand-bright-color-2': this.selectByTheme(this.$store.state.config['skin.slliberty.brand_bright_color_2'] ?? 'var(--liberty-brand-bright-color)', 'var(--liberty-brand-bright-color)'),
+                '--text-color': this.selectByTheme('#373a3c', '#ddd'),
+                '--article-background-color': this.selectByTheme('#fff', '#000'),
+            };
+        },
+        requestable() {
+            return this.$store.state.page.data.editable === true && this.$store.state.page.data.edit_acl_message && this.$store.state.page.viewName !== 'notfound';
+        }
+    },
+    methods: {
+	    updateNotFoundImage(viewName) {
+            const article = document.querySelector('.wiki-article')
+            const existing = document.querySelector('#notfound-watermark')
+
+            if (existing) existing.remove()
+
+            if (viewName === 'notfound' && article) {
+                article.style.position = 'relative';
+                article.style.height = '400px';
+                const count = 2 // notfound 이미지 개수
+                const randomNum = Math.floor(Math.random() * count) + 1
+                const randomSrc = `/notfound${randomNum}.png`
+                const alertBox = article.querySelector('.thetree-alert')
+                let imgElement = `<img id="notfound-watermark"
+                       src="${randomSrc}"
+                       style="width: 300px; opacity: 0.4; right: 0px; padding-right: 10px; margin-right: 20px; z-index: 0; position: absolute; pointer-events:none;">`
+                if (alertBox) {
+                    alertBox.insertAdjacentHTML(
+					  'afterend',
+                      imgElement
+                    )
+                } else {
+                    article.insertAdjacentHTML(
+                      'afterbegin',
+                      imgElement
+                    )
+                }
+            } else {
+                    article.style.position = '';
+                    article.style.height = '';
+            }
+        },
+		showProfileImage() {
+			this.$nextTick(() => {
+                if(this.$store.state['viewData'].userProfile) {
+                    const existUserProfile = document.querySelector('.user-profile-table');
+                    if(existUserProfile) existUserProfile.remove();
+                    const content = document.querySelector('.wiki-content')
+                    let date = new Date(this.$store.state['viewData'].userProfile.createdAt).toLocaleDateString();
+                    let profileHtml = `<div class="wiki-paragraph">
+                          <table class="user-profile-table">
+                              <tr>
+                                  <td colspan=2 class="avatar-cell">
+                                      <img src="${this.$store.state['viewData'].userProfile.gravatarUrl}" alt="Avatar" class="avatar">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td><strong class="clone-trigger">사용자명</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.username}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>가입일</strong></td>
+                                  <td>${date}</td>
+                              </tr>
+							  <tr>
+                                  <td><strong>권한</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.userPerm}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>ACL Group</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.aclGroups}</td>
+                              </tr>
+                          </table>
+                      </div>`;
+                content.insertAdjacentHTML(
+                    'afterbegin',
+                    profileHtml
+                    )
+					bindCloneTrigger();
+                }
+			})
+		},
+        showEditMessage() {
+            if (this.isShowACLMessage) {
+                this.$router.push(this.doc_action_link(this.$store.state.page.data.document, this.requestable ? 'new_edit_request' : 'edit'));
+            }
+            else {
+                this.isShowACLMessage = true;
+            }
+        },
+        darkenColor(hex, percent=50) {
+            let r = parseInt(hex.substring(1, 3), 16);
+            let g = parseInt(hex.substring(3, 5), 16);
+            let b = parseInt(hex.substring(5, 7), 16);
+
+            r = Math.round(r * (1 - percent / 100));
+            g = Math.round(g * (1 - percent / 100));
+            b = Math.round(b * (1 - percent / 100));
+
+            return "#" + ((r < 16 ? "0" : "") + r.toString(16)) + ((g < 16 ? "0" : "") + g.toString(16)) + ((b < 16 ? "0" : "") + b.toString(16));
+        },
+        lightenColor(hex, percent=50) {
+            let r = parseInt(hex.substring(1, 3), 16);
+            let g = parseInt(hex.substring(3, 5), 16);
+            let b = parseInt(hex.substring(5, 7), 16);
+
+            r = Math.round(r + (255 - r) * (percent / 100));
+            g = Math.round(g + (255 - g) * (percent / 100));
+            b = Math.round(b + (255 - b) * (percent / 100));
+
+            return "#" + ((r < 16 ? "0" : "") + r.toString(16)) + ((g < 16 ? "0" : "") + g.toString(16)) + ((b < 16 ? "0" : "") + b.toString(16));
+        },
+        selectByTheme(light, dark) {
+            return this.$store.state.currentTheme === 'dark' ? dark : light;
+        },
+        openSettingModal() {
+            this.$vfm.show({ component: SettingModal });
+        }
+    }
+}
+</script>

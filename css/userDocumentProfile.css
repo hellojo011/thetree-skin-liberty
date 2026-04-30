@@ -1,0 +1,33 @@
+.theseed-dark-mode .user-profile-table {
+  background:#14161a;
+  border-color: #272b33;
+}
+.user-profile-table {
+  float: right;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  position: relative;
+  top: 30px;
+  background: #f9f9f9;
+  margin-bottom: 3rem;
+}
+
+.user-profile-table td {
+  padding: 4px 8px;
+  vertical-align: middle;
+}
+
+.avatar-cell {
+  padding: 0;
+}
+
+img.avatar {
+  width: 250px;
+  display: block;
+  margin: auto;
+}
+
+.theseed-dark-mode .user-profile-table tr:nth-child(odd) {
+  background: #272b33;
+}
