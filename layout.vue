@@ -225,6 +225,7 @@ export default {
 	    this.showProfileImage();
 		initEasterEgg();
         initKonamiEasterEgg();
+		const title = this.$store.state.page?.data?.document?.title?.trim().toLowerCase();
         if(title?.includes('산골짜기늑대')) { this.showStars() };
 		this.$nextTick(() => {
             // 초기 페이지 로드 시에도 실행되도록
