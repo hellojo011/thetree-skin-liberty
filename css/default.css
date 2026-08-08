@@ -745,3 +745,45 @@ html.barrel-roll {
   animation: konamiSpin 0.9s ease-in-out;
   will-change: transform;
 }
+
+
+#stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    background: white;
+	box-shadow: 0 0 2px white, 0 0 4px white, 0 0 8px rgba(255, 255, 255, .5);
+    border-radius: 50%;
+    animation: twinkle linear infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+body.theseed-dark-mode #stars {
+    background: linear-gradient(to bottom, #050816, #0a1433, #102a63);
+    z-index: -100;
+}
+
+body:not(.theseed-dark-mode) #stars {
+    display:none;
+}
+
+body.theseed-dark-mode .Liberty {
+    background: transparent!important;
+}
+
+body.theseed-dark-mode .liberty-content>* {
+    background:transparent !important;
+}
+
