@@ -223,8 +223,18 @@ export default {
 	    this.showProfileImage();
 		initEasterEgg();
         initKonamiEasterEgg();
+		const title = this.$store.state.page?.data?.document?.title?.trim().toLowerCase();
+        if(title?.includes('산골짜기늑대')) { this.showStars() };
+		this.$nextTick(() => {
+            // 초기 페이지 로드 시에도 실행되도록
+            this.updateNotFoundImage(this.$store.state.page.viewName)
+        })
+
 	},
     watch: {
+		'$store.state.page.viewName'(newVal) {
+            this.$nextTick(() => this.updateNotFoundImage(newVal))
+        },
         $route() {
             this.isShowACLMessage = false;
         },
@@ -234,9 +244,14 @@ export default {
 			}
         },
         '$store.state.page.data.document.title'(val) {
-            const title = val?.trim().toLowerCase()
-            if (title !== 'do a barrel roll') {}
-			else {doABarrelRoll()}
+            const title = val?.trim().toLowerCase();
+			const stars = document.getElementById('stars');
+            if (title !== 'do a barrel roll') {} else {doABarrelRoll()}
+			if (title?.includes("산골짜기늑대")) {
+				this.showStars();
+			} else {
+				stars?.remove();
+			}
         }
     },
     head() {
@@ -287,7 +302,7 @@ export default {
                 const alertBox = article.querySelector('.thetree-alert')
                 let imgElement = `<img id="notfound-watermark"
                        src="${randomSrc}"
-                       style="width: 300px; opacity: 0.4; right: 0px; padding-right: 10px; margin-right: 20px; z-index: 0; position: absolute; pointer-events:none;">`
+                       style="width: 250px; opacity: 0.4; right: 0px; padding-right: 10px; margin-right: 20px; z-index: 0; position: absolute; pointer-events:none;">`
                 if (alertBox) {
                     alertBox.insertAdjacentHTML(
 					  'afterend',
@@ -379,7 +394,32 @@ export default {
         },
         openSettingModal() {
             this.$vfm.show({ component: SettingModal });
-        }
+        },
+		showStars() {
+			const content = document.querySelector('.wiki-article');
+			const stars = document.getElementById('stars');
+			if(stars) { return 0; }
+			content.insertAdjacentHTML('afterbegin', '<div id="stars"></div>');
+			const container = document.getElementById("stars");
+
+			for (let i = 0; i < 200; i++) {
+			    const star = document.createElement("div");
+	
+				const size = Math.random() * 3 + 1;
+
+			    star.className = "star";
+			    star.style.width = `${size}px`;
+			    star.style.height = `${size}px`;
+
+			    star.style.left = `${Math.random() * 100}%`;
+			    star.style.top = `${Math.random() * 100}%`;
+
+			    star.style.animationDuration =
+			        `${Math.random() * 4 + 2}s`;
+
+			    container.appendChild(star);
+			}
+		}
     }
 }
 </script>
